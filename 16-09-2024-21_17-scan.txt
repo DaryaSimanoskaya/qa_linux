@@ -1,0 +1,20 @@
+Отчет о состоянии системы
+Пользователи системы: avahi, rtkit, geoclue, systemd+, colord, root, polkitd, vboxuser, message+
+Процессов запущено: 204
+
+Пользовательских процессов:
+root: 84
+systemd+: 1
+avahi: 2
+message+: 1
+polkitd: 1
+rtkit: 1
+colord: 1
+vboxuser: 112
+geoclue: 1
+
+Всего памяти используется: 141.8%
+
+Всего CPU используется: 177.8%
+Больше всего памяти использует: /usr/lib/firefox-esr 11.1%
+Больше всего CPU использует: ps aux 100.0%
