@@ -7,6 +7,7 @@ def parse_ps_aux():
     ps_output = result.stdout.decode('utf-8').splitlines()
     return ps_output[1:]
 
+
 def process_info():
     ps_output = parse_ps_aux()
     users = set()
@@ -25,19 +26,21 @@ def process_info():
         process_name = columns[10][:20]
 
         users.add(user)
-        total_processes +=1
-        
+        total_processes += 1
+
         if user in user_process_count:
-            user_process_count[user] += 1 
+            user_process_count[user] += 1
         else:
             user_process_count[user] = 1
-        total_mem+=mem
-        total_cpu+=cpu
+
+        total_mem += mem
+        total_cpu += cpu
 
         if mem > max_mem_process[1]:
             max_mem_process = (process_name, mem)
         if cpu > max_cpu_process[1]:
             max_cpu_process = (process_name, cpu)
+
     return {
         "users": users,
         "total_processes": total_processes,
@@ -48,32 +51,32 @@ def process_info():
         "max_cpu_process": max_cpu_process
     }
 
+
+def generate_report(report):
+    report_str = f"Отчет о состоянии системы\n"
+    report_str += f"Пользователи системы: {', '.join(report['users'])}\n"
+    report_str += f"Процессов запущено: {report['total_processes']}\n\n"
+    report_str += f"Пользовательских процессов:\n"
+    for user, count in report["user_process_count"].items():
+        report_str += f"{user}: {count}\n"
+    report_str += f"\nВсего памяти используется: {report['total_mem']:.1f}%\n"
+    report_str += f"Всего CPU используется: {report['total_cpu']:.1f}%\n"
+    report_str += f"Больше всего памяти использует: {report['max_mem_process'][0]} {report['max_mem_process'][1]:.1f}%\n"
+    report_str += f"Больше всего CPU использует: {report['max_cpu_process'][0]} {report['max_cpu_process'][1]:.1f}%\n"
+
+    return report_str
+
+
 def save_report(report):
     now = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M")
     filename = f"{now}-scan.txt"
     with open(filename, 'w') as f:
-        f.write(f"Отчет о состоянии системы\n")
-        f.write(f"Пользователи системы: {', '.join(report['users'])}\n")
-        f.write(f"Процессов запущено: {report['total_processes']}\n\n")
-        f.write(f"Пользовательских процессов:\n")
-        for user, count in report["user_process_count"].items():
-            f.write(f"{user}: {count}\n")
-        f.write(f"\nВсего памяти используется: {report['total_mem']:.1f}%\n")
-        f.write(f"\nВсего CPU используется: {report['total_cpu']:.1f}%\n")
-        f.write(f"Больше всего памяти использует: {report['max_mem_process'][0]} {report['max_mem_process'][1]:.1f}%\n")
-        f.write(f"Больше всего CPU использует: {report['max_cpu_process'][0]} {report['max_cpu_process'][1]:.1f}%\n")
+        f.write(generate_report(report))
+    print(f"Отчёт сохранён в файл {filename}")
+
 
 if __name__ == "__main__":
     report = process_info()
-    print(f"Отчет о состоянии системы\n")
-    print(f"Пользователи системы: {', '.join(report['users'])}\n")
-    print(f"Процессов запущено: {report['total_processes']}\n\n")
-    print(f"Пользовательских процессов:\n")
-    for user, count in report["user_process_count"].items():
-        print(f"{user}: {count}\n")
-    print(f"\nВсего памяти используется: {report['total_mem']:.1f}%\n")
-    print(f"\nВсего CPU используется: {report['total_cpu']:.1f}%\n")
-    print(f"Больше всего памяти использует: {report['max_mem_process'][0]} {report['max_mem_process'][1]:.1f}%\n")
-    print(f"Больше всего CPU использует: {report['max_cpu_process'][0]} {report['max_cpu_process'][1]:.1f}%\n")
-
+    report_str = generate_report(report)
+    print(report_str)
     save_report(report)
